@@ -7,49 +7,8 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue'
 import bc from '@brightcove/player-loader'
-import videojs from 'video.js'
 
-export type PlayerType = videojs.Player & HTMLIFrameElement
-
-export interface BrightcovePlayerProps extends videojs.PlayerOptions {
-  accountId: number
-  playerId: string
-  embedId: string
-  videoId: number
-  refNode: Element
-  refNodeInsert?: string
-  adConfigId?: string
-  applicationId?: string
-  catalogSearch?:
-    | string
-    | {
-        q: string
-        limit: number
-      }
-  catalogSequence?: {
-    type: string
-    id: {
-      q: string
-      limit: number
-    }
-  }
-  embedOptions?: {
-    pip?: boolean
-    playlist?: boolean
-    responsive?: boolean
-    tagName?: string
-    unminified?: boolean
-  }
-  embedType?: string
-  playerUrl?: string
-  playlistId?: number
-  playlistVideoId?: number
-  options?: videojs.PlayerOptions
-}
-
-export interface Data {
-  player: PlayerType | null
-}
+import { BrightcovePlayerProps, PlayerVueData } from './BrightcovePlayer'
 
 export default Vue.extend({
   name: 'Brightcove',
@@ -66,7 +25,7 @@ export default Vue.extend({
     },
   },
 
-  data(): Data {
+  data(): PlayerVueData {
     return {
       player: null,
     }
