@@ -62,6 +62,8 @@ export default Vue.extend({
      * destroy
      */
     disposePlayer() {
+      this.eventDetach()
+
       // destroy player
       if (this.player && this.player.dispose) {
         this.player.dispose()
@@ -87,6 +89,18 @@ export default Vue.extend({
         this.player.on('ended', this.onEnded)
       }
     },
+
+      /**
+       * detach event handlers
+       */
+      eventDetach() {
+        if (this.player) {
+          this.player.off('play', this.onPlay)
+          this.player.off('timeupdate', this.onTimeupdate)
+          this.player.off('pause', this.onPause)
+          this.player.off('ended', this.onEnded)
+        }
+      },
 
     /**
      * handlers
