@@ -3,11 +3,11 @@ import videojs from 'video.js'
 export type PlayerType = videojs.Player & HTMLIFrameElement
 
 export interface BrightcovePlayerProps extends videojs.PlayerOptions {
-  accountId: number
+  accountId: number | string
   playerId: string
   embedId: string
-  videoId: number
-  refNode: Element
+  videoId: number | string
+  refNode?: Element
   refNodeInsert?: string
   adConfigId?: string
   applicationId?: string
