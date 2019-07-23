@@ -79,18 +79,22 @@ export default Vue.extend({
       this.eventDetach()
       cancelAnimationFrame(this.animId)
 
-      // destroy player
-      if (this.player && this.player.dispose) {
-        this.player.dispose()
+      // Nothing to dispose.
+      if (!this.player) {
+          return
       }
 
-      // cleanup iframe
-      if (this.player && this.player.parentNode) {
-        this.player.parentNode.removeChild(this.player)
+      // Dispose an in-page player.
+      if (this.player.dispose) {
+          this.player.pause && this.player.pause()
+          this.player.dispose()
+
+        // Dispose an iframe player.
+      } else if (this.player.parentNode) {
+          this.player.parentNode.removeChild(this.player)
       }
 
-      // destroy bc instance
-      bc.reset()
+      this.player = null
     },
 
     /**
