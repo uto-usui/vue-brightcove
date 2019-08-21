@@ -11,14 +11,14 @@ import bc from '@brightcove/player-loader'
 import { BrightcovePlayerProps, PlayerVueData } from './BrightcovePlayer'
 
 interface DataLocal {
-  isAutoPlay: boolean
   animId: number
+  viewportIn: boolean
 }
 
-type Data = PlayerVueData & DataLocal
+type BrightcovePlayerData = PlayerVueData & DataLocal
 
 export default Vue.extend({
-  name: 'Brightcove',
+  name: 'BrightcovePlayer',
 
   props: {
     id: {
@@ -40,7 +40,8 @@ export default Vue.extend({
     return {
       player: null,
       animId: 0,
-    } as Data
+      viewportIn: false,
+    } as BrightcovePlayerData
   },
 
   computed: {
@@ -81,17 +82,17 @@ export default Vue.extend({
 
       // Nothing to dispose.
       if (!this.player) {
-          return
+        return
       }
 
       // Dispose an in-page player.
       if (this.player.dispose) {
-          this.player.pause && this.player.pause()
-          this.player.dispose()
+        this.player.pause && this.player.pause()
+        this.player.dispose()
 
         // Dispose an iframe player.
       } else if (this.player.parentNode) {
-          this.player.parentNode.removeChild(this.player)
+        this.player.parentNode.removeChild(this.player)
       }
 
       this.player = null
@@ -153,23 +154,40 @@ export default Vue.extend({
       const rect = this.$el.getBoundingClientRect()
       // scroll position
       const scrollTop =
-        scrollY || document.documentElement.scrollTop || document.body.scrollTop
+        window.scrollY ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop
       const top = rect.top + scrollTop - document.documentElement.clientTop
+      // viewport height
       const windowHeight = window.innerHeight
-      // content dist viewport
+      // dist - from window bottom to content top
       const contentTop = scrollTop + windowHeight - top
-      // ration - content dist viewport
-      const ratio = contentTop / (rect.height + windowHeight)
+      // ratio - Until the element is visible and then invisible 0 ~ 1
+      const ratio =
+        Math.trunc((contentTop / (rect.height + windowHeight)) * 100) / 100
 
-      if (ratio > 0.1 && ratio < 1) {
-        this.player && this.player.paused() && this.player.play()
+      if (ratio > 0.03 && ratio < 1) {
+        !this.viewportIn && this.play()
+        this.viewportIn = true
       } else {
-        this.player && !this.player.paused() && this.player.pause()
+        this.pause()
+        this.viewportIn = false
       }
 
       this.animId = requestAnimationFrame(this.autoPlay)
     },
+
+    play() {
+      this.player && this.player.paused() && this.player.play()
+    },
+
+    pause() {
+      this.player && !this.player.paused() && this.player.pause()
+    },
   },
+  // render(h) {
+  //   return h('div')
+  // },
 })
 </script>
 
